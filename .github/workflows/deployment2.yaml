@@ -1,6 +1,5 @@
 name: Deployment Exercise 2
 on:
-  pull_request:
   push:
     branches: [ "main" ]
 jobs:
