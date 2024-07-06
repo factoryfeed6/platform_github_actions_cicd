@@ -1,4 +1,4 @@
-name: Deployment Exercise 2
+name: CD activity
 on:
   push:
     branches: [ "main" ]
