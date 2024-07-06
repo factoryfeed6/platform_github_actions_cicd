@@ -1,4 +1,4 @@
-name: Deployment Exercise 1
+name: CI activity
 on:
   pull_request:
     branches: [ "main" ]
