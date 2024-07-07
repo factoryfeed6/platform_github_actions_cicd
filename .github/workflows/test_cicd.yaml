@@ -1,17 +1,17 @@
-name: Testing CICD
+name: Testing CICD      
 on:
-  pull_request:
-    types:
+  pull_request:  #### this indicates on with the workflow should trigger in this i mentione on pull request
+    types:     ## types indicates types of reqquest opened in the repo
         - opened
         - reopened
         - closed
-    branches:
-        - main
-  workflow_dispatch:
-  push:
+    branches:      ##### thisindicates we can spefice when the changes is made in branches it should only trigger mentioned branch
+        - main    
+  workflow_dispatch: ##### this indicates where we can run the workflow manully via console
+  push:             #### this indicates on with the workflow should trigger if they push code to mentione branch 
     branches: [ "main" ]
     paths-ignore:
-      - '.github/workflows/*'
+      - '.github/workflows/*'           ###### keyworkds: name, on, pull_request, push, types, branches, jobs, runs-on, steps, uses,run
 jobs:
   lint:
     runs-on: ubuntu-latest
