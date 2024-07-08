@@ -88,7 +88,7 @@ jobs:
         with:
           name: dist-files
   output_artifact:
-    needs: [artifacts,download_artifact]
+    needs: [download_artifact]
     runs-on: ubuntu-latest
     steps:
       - name: Get code
@@ -100,7 +100,7 @@ jobs:
       - name: Output contents
         run: ls
       - name: Output filename
-        run: echo "{{ needs.artifacts.outputs.script-file }}"" 
+        run: echo "{{ needs.artifacts.outputs.script-file }}" 
         ### this needs.artifacts indicates where we calling output block we should refer that job block needs
         ## so in output_artifact job needs is artifacts
         ## outputs.script-file is where refr=ering the mail output block , script-file should be same as main block where me called
