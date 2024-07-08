@@ -66,16 +66,6 @@ jobs:
             path: |
               dist
               package.json
-  download_artifact:
-    needs: [ artifacts,test ]
-    runs-on: ubuntu-latest
-    steps:
-      - name: Get code
-        uses: actions/checkout@v3
-      - name: get build artifacts
-        uses: actions/download-artifact@v4
-        with:
-          name: dist-files
   output_artifact:
     needs: artifacts
     runs-on: ubuntu-latest
@@ -88,6 +78,16 @@ jobs:
           name: dist-files
       - name: Output contents
         run: ls
+  download_artifact:
+    needs: [ artifacts,test ]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get code
+        uses: actions/checkout@v3
+      - name: get build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: dist-files
   deploy:
     needs: [ download_artifact]  
     runs-on: ubuntu-latest
