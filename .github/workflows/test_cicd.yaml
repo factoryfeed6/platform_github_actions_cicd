@@ -11,7 +11,8 @@ on:
   push:             #### this indicates on with the workflow should trigger if they push code to mentione branch 
     branches: [ "main" ]
     paths-ignore:
-      - '.github/workflows/*'           ###### keyworkds: name, on, pull_request, push, types, branches, jobs, runs-on, steps, uses,run
+      - 'README.md'
+      - 'CD.yaml'           ###### keyworkds: name, on, pull_request, push, types, branches, jobs, runs-on, steps, uses,run
 jobs:
   lint:
     runs-on: ubuntu-latest
@@ -44,8 +45,8 @@ jobs:
         run: npm run lint
       - name: Test code
         run: npm run test
-  deploy:
-    needs: test
+  artifacts:
+    needs: install
     runs-on: ubuntu-latest
     steps:
       - name: Get code
@@ -57,4 +58,38 @@ jobs:
       - name: Build code
         run: npm run build
       - name: Deploy code
-        run: echo "Deploying..."
+        run: echo "Deploying..." 
+      - name: Archive production artifacts
+        uses: actions/upload-artifact@v4
+        with:
+            name: dist-files
+            path: |
+              dist
+              package.json
+  download_artifact:
+    needs: artifacts
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get code
+        uses: actions/checkout@v3
+      - name: get build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: dist-files
+  deploy:
+    needs: [ test,download_artifact]  
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get code
+        uses: actions/checkout@v3
+      - name: Install dependencies
+        run: npm ci
+      - name: Test code
+        run: npm run test
+      - name: Build code
+        run: npm run build
+      - name: Deploy code
+        run: echo "Deploying..." 
+  
+        
+
