@@ -39,6 +39,15 @@ jobs:
     steps: 
       - name: Get code
         uses: actions/checkout@v3
+      - name: Cache Dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.npm
+          key: deps-node-module-${{ hashFiles('**/packages-lock.json') }}
+      ### this is used to cache the dependencies which will reduce the workflow runtime
+      ## Once the cache dependencies is writen in any block it will act as center dependency which it will used by other jobs no need to again 
+      ## if need package is added it will resynck this depenencid 
+      ## key: deps-node-module-{{ hashFiles('**/packages-lock.json') }} this where file is created as unique hashfiles
       - name: Install dependencies
         run: npm ci
       - name: Lint
