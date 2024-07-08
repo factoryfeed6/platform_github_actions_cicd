@@ -67,7 +67,7 @@ jobs:
               dist
               package.json
   download_artifact:
-    needs: artifacts
+    needs: [ artifacts,test ]
     runs-on: ubuntu-latest
     steps:
       - name: Get code
@@ -77,7 +77,7 @@ jobs:
         with:
           name: dist-files
   output_artifact:
-    needs: install
+    needs: artifacts
     runs-on: ubuntu-latest
     steps:
       - name: Get code
@@ -89,7 +89,7 @@ jobs:
       - name: Output contents
         run: ls
   deploy:
-    needs: [ test,output_artifact,download_artifact]  
+    needs: [ download_artifact]  
     runs-on: ubuntu-latest
     steps:
       - name: Get code
