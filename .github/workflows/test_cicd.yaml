@@ -89,7 +89,7 @@ jobs:
       - name: Output contents
         run: ls
   deploy:
-    needs: [ output_artifact]  
+    needs: [ test,output_artifact]  
     runs-on: ubuntu-latest
     steps:
       - name: Get code
