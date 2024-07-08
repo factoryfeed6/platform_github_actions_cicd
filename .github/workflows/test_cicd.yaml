@@ -77,7 +77,7 @@ jobs:
         with:
           name: dist-files
   output_artifact:
-    needs: download_artifact
+    needs: [artifacts,download_artifact]
     runs-on: ubuntu-latest
     steps:
       - name: Get code
