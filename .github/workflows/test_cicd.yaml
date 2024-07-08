@@ -48,6 +48,11 @@ jobs:
   artifacts:
     needs: install
     runs-on: ubuntu-latest
+    outputs:                                ###output is an reserved key
+      script-file: ${{ steps.publish.outputs.script-file }} 
+      ### this output block is access over all this actions
+      ## this script-file can we user own defined and in code outout.script-file should be same as declared script-file={} 
+      ## steps.publish should be same as id mentioned  id: publish 
     steps:
       - name: Get code
         uses: actions/checkout@v3
@@ -59,6 +64,12 @@ jobs:
         run: npm run build
       - name: Deploy code
         run: echo "Deploying..." 
+      - name: Publish JS file
+        id: publish                              ####### this id is used to refer the output value
+        run: find dist/assets/*.js -type f -execdir echo 'script-file={}' >> $GITHUB_OUTPUT';' 
+                                ##alternatice syntax 
+        #run: find dist/assets/*.js -type f -execdir echo '::set-output name=script::{}' ';'
+
       - name: Archive production artifacts
         uses: actions/upload-artifact@v4
         with:
@@ -88,6 +99,12 @@ jobs:
           name: dist-files
       - name: Output contents
         run: ls
+      - name: Output filename
+        run: echo "{{ needs.artifacts.outputs.script-file }}"" 
+        ### this needs.artifacts indicates where we calling output block we should refer that job block needs
+        ## so in output_artifact job needs is artifacts
+        ## outputs.script-file is where refr=ering the mail output block , script-file should be same as main block where me called
+        ## so by this we can call or use the outputs between jobs
   deploy:
     needs: [ test,output_artifact]  
     runs-on: ubuntu-latest
