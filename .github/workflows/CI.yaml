@@ -2,6 +2,9 @@ name: CI activity
 on:
   pull_request:
     branches: [ "main" ]
+    paths-ignore:
+      - 'test_cicd.yaml'
+      - 'CD.yaml'
 jobs:
   deploy:
     runs-on: ubuntu-latest
