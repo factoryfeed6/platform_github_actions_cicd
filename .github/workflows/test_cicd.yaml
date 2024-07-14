@@ -69,7 +69,7 @@ jobs:
         uses: actions/cache@v4
         id: caches
         with:
-          path: ~/.npm
+          path: node_modules
           key: deps-node-module-${{ hashFiles('**/packages-lock.json') }}
       ### this is used to cache the dependencies which will reduce the workflow runtime
       ## Once the cache dependencies is writen in any block it will act as center dependency which it will used by other jobs no need to again 
