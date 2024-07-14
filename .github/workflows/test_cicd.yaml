@@ -166,6 +166,7 @@ jobs:
       - name: Deploy code
         run: echo "Deploying..." 
   report:
+    needs: [lint, install, test, artifacts, download_artifact, output_artifact, deploy ]
     ## see in this job I used failure condition. if any job or step gets failer this job will execute otherwise it wont run , generate report 
     if: failure()
     runs-on: ubuntu-latest
