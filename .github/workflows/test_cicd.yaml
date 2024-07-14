@@ -46,11 +46,12 @@ jobs:
                                          ##  ( OR ) 
 
   ##one more method with hardcoding the values in the workflow we can save those values in git repo as a secrets so no one can see this credentials 
-    env:
-      MONGODB_CLUSTER_ADDRESS: ${{ secrets.MONGODB_CLUSTER_ADDRESS }}
-      MONGODB_USERNAME: ${{ secrets.MONGODB_USERNAME }}                      
-      MONGODB_PASSWORD: ${{ secrets.MONGODB_PASSWORD }}
-      
+    # env:
+    #   MONGODB_CLUSTER_ADDRESS: ${{ secrets.MONGODB_CLUSTER_ADDRESS }}
+    #   MONGODB_USERNAME: ${{ secrets.MONGODB_USERNAME }}                      
+    #   MONGODB_PASSWORD: ${{ secrets.MONGODB_PASSWORD }}
+       ##repository secrets are read when a workflow run is queued 
+       ##environment secrets are read when a job referencing the environment starts.
 
     needs: install
     runs-on: ubuntu-latest
@@ -74,8 +75,8 @@ jobs:
         run: npm run lint
       - name: Test code
         run: npm run test
-      - name: Outputing DB_username
-        run: echo  "MONGODB_USERNAME:${{ env.MONGODB_USERNAME}}" 
+      # - name: Outputing DB_username
+      #   run: echo  "MONGODB_USERNAME:${{ env.MONGODB_USERNAME}}" 
   artifacts:
     needs: install
     runs-on: ubuntu-latest
