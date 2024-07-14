@@ -93,7 +93,7 @@ jobs:
         run: npm ci
       - name: Test code
         id: run-test
-        run: npm run tests
+        run: npm run test
       - name: upload test report
         if: success() && steps.run-test.outcome == 'success'  
         ##this if condition is used to create that previous step condition fail or success for example I used success condition
