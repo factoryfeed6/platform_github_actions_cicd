@@ -75,8 +75,8 @@ jobs:
         run: npm run lint
       - name: Test code
         run: npm run test
-      # - name: Outputing DB_username
-      #   run: echo  "MONGODB_USERNAME:${{ env.MONGODB_USERNAME}}" 
+      - name: Outputing DB_username
+        run: echo  "MONGODB_USERNAME:${{ env.Testing.MONGODB_USERNAME}}" 
   artifacts:
     needs: install
     runs-on: ubuntu-latest
