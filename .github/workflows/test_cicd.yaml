@@ -37,6 +37,7 @@ jobs:
       run: npm run lint
   test:
     environment: Testing  ### this are the Environment specfic secrets where It can access credentail its stored in enviroments in repo
+    
     # env: 
       # MONGODB_CLUSTER_ADDRESS: testcluster.qhtpn7m.mongodb.net ## In this we have declared the Env variable inside job so we can access this 
       # MONGODB_USERNAME: manojkumarn631                         ## Env variable only in this job connot be accessed by other job
@@ -67,8 +68,8 @@ jobs:
       ## key: deps-node-module-{{ hashFiles('**/packages-lock.json') }} this where file is created as unique hashfiles
       - name: Install dependencies
         run: npm ci
-      - name: Run server
-        run: npm start & npx wait-on http://127.0.0.1:$PORT  ##### this $PORT is referring to PORT Environment variable in line 41
+      # - name: Run server
+      #   run: npm start & npx wait-on http://127.0.0.1:$PORT  ##### this $PORT is referring to PORT Environment variable in line 41
       - name: Lint
         run: npm run lint
       - name: Test code
