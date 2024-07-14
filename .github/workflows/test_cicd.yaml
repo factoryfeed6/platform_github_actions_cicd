@@ -95,7 +95,10 @@ jobs:
         id: run-test
         run: npm run test
       - name: upload test report
-        if: steps.run-test.outcome == 'failure'
+        if: success() && steps.run-test.outcome == 'success'  
+        ##this if condition is used to create that previous step condition fail or success for example I used success condition
+        ##if previous job get success then this step should run and same for failure also 
+        ## this If condiion is used in jobs ,steps level
         uses: actions/upload-artifact@v3
         with:
           name: test-report
@@ -162,6 +165,14 @@ jobs:
         run: npm run build
       - name: Deploy code
         run: echo "Deploying..." 
-  
+  report:
+    ## see in this job I used failure condition. if any job or step gets failer this job will execute otherwise it wont run , generate report 
+    if: failure()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Getting the final report
+        run: |
+         echo " Resport generate successfully"
+         ech0 "${{ github }}"
 
 
