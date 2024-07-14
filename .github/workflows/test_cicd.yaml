@@ -12,7 +12,9 @@ on:
     branches: [ "main" ]
     paths-ignore:
       - 'README.md'
-      - 'CD.yaml'           ###### keyworkds: name, on, pull_request, push, types, branches, jobs, runs-on, steps, uses,run
+      - 'CD.yaml'      ###### keyworkds: name, on, pull_request, push, types, branches, jobs, runs-on, steps, uses,run
+env:
+  MONGODB_DB_NAME: testing_name   #### In This Env variable can be accessed by whole workflow any job 
 jobs:
   lint:
     runs-on: ubuntu-latest
@@ -34,6 +36,21 @@ jobs:
     - name: Lint
       run: npm run lint
   test:
+    environment: Testing  ### this are the Environment specfic secrets where It can access credentail its stored in enviroments in repo
+    # env: 
+      # MONGODB_CLUSTER_ADDRESS: testcluster.qhtpn7m.mongodb.net ## In this we have declared the Env variable inside job so we can access this 
+      # MONGODB_USERNAME: manojkumarn631                         ## Env variable only in this job connot be accessed by other job
+      # MONGODB_PASSWORD: Ish0vCOXjAH0F2rp
+      # PORT: 3000
+                                         ##  ( OR ) 
+
+  ##one more method with hardcoding the values in the workflow we can save those values in git repo as a secrets so no one can see this credentials 
+    env:
+      MONGODB_CLUSTER_ADDRESS: ${{ secrets.MONGODB_CLUSTER_ADDRESS }}
+      MONGODB_USERNAME: ${{ secrets.MONGODB_USERNAME }}                      
+      MONGODB_PASSWORD: ${{ secrets.MONGODB_PASSWORD }}
+      
+
     needs: install
     runs-on: ubuntu-latest
     steps: 
@@ -46,14 +63,18 @@ jobs:
           key: deps-node-module-${{ hashFiles('**/packages-lock.json') }}
       ### this is used to cache the dependencies which will reduce the workflow runtime
       ## Once the cache dependencies is writen in any block it will act as center dependency which it will used by other jobs no need to again 
-      ## if need package is added it will resynck this depenencid 
+      ## if new package is added it will resynck this depenencid 
       ## key: deps-node-module-{{ hashFiles('**/packages-lock.json') }} this where file is created as unique hashfiles
       - name: Install dependencies
         run: npm ci
+      - name: Run server
+        run: npm start & npx wait-on http://127.0.0.1:$PORT  ##### this $PORT is referring to PORT Environment variable in line 41
       - name: Lint
         run: npm run lint
       - name: Test code
         run: npm run test
+      - name: Outputing DB_username
+        run: echo  "MONGODB_USERNAME:${{ env.MONGODB_USERNAME}}" 
   artifacts:
     needs: install
     runs-on: ubuntu-latest
@@ -86,6 +107,9 @@ jobs:
             path: |
               dist
               package.json
+      - name: outputing the env value
+        run: echo "MONGODB_DB_NAME:${{env.MONGODB_DB_NAME}}" ### In this we are accessing the Env variable which is declared globally so 
+        ### we can access those Env variable in any jobs                   
   download_artifact:
     needs: [ install,artifacts]
     runs-on: ubuntu-latest
