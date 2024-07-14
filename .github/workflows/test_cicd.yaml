@@ -1,34 +1,35 @@
 name: Testing CICD      
 on:
-  pull_request:  #### this indicates on with the workflow should trigger in this i mentione on pull request
-    types:     ## types indicates types of reqquest opened in the repo
+  pull_request:                 #### this indicates on with the workflow should trigger in this i mentione on pull request
+    types:                      ## types indicates types of reqquest opened in the repo
         - opened
         - reopened
         - closed
-    branches:      ##### thisindicates we can spefice when the changes is made in branches it should only trigger mentioned branch
+    branches:             #### thisindicates we can spefice when the changes is made in branches it should only trigger mentioned branch
         - main    
-  workflow_dispatch: ##### this indicates where we can run the workflow manully via console
-  push:             #### this indicates on with the workflow should trigger if they push code to mentione branch 
+  workflow_dispatch:         ##### this indicates where we can run the workflow manully via console
+  push:                      #### this indicates on with the workflow should trigger if they push code to mentione branch 
     branches: [ "main" ]
     paths-ignore:
-      - 'README.md'
-      - 'CD.yaml'      ###### keyworkds: name, on, pull_request, push, types, branches, jobs, runs-on, steps, uses,run
+      - 'README.md' 
+      - 'CD.yaml'                   ###### keyworkds: name, on, pull_request, push, types, branches, jobs, runs-on, steps, uses,run
       - 'CI.yaml'      
 env:
-  MONGODB_DB_NAME: testing_name   #### In This Env variable can be accessed by whole workflow any job 
+  MONGODB_DB_NAME: testing_name     #### In This Env variable can be accessed by whole workflow any job 
 jobs:
   lint:
     runs-on: ubuntu-latest
     steps: 
       - name: Get code
         uses: actions/checkout@v3
-      # - name: cache dependencies
-      #   id: cache
-      #   uses: actions/cache@v4
-      #   with:
-      #     path: ~/.npm
-      #     key: deps-node-module-${{ hashFiles('**/packages-lock.json') }}
+      - name: Cache Dependencies
+        uses: actions/cache@v4
+        id: caches
+        with:
+          path: node_modules
+          key: deps-node-module-${{ hashFiles('**/packages-lock.json') }}
       - name: Install dependencies
+        if: steps.caches.outputs.cache-hit != 'true'
         run: npm ci
       - name: Lint
         run: npm run lint
@@ -38,7 +39,14 @@ jobs:
     steps:
     - name: Get code
       uses: actions/checkout@v3
+    - name: Cache Dependencies
+      uses: actions/cache@v4
+      id: caches
+      with:
+        path: node_modules
+        key: deps-node-module-${{ hashFiles('**/packages-lock.json') }}
     - name: Install dependencies
+      if: steps.caches.outputs.cache-hit != 'true'
       run: npm ci
     - name: Lint
       run: npm run lint
@@ -89,7 +97,7 @@ jobs:
   artifacts:
     needs: install
     runs-on: ubuntu-latest
-    outputs:                                ###output is an reserved key
+    outputs:                                                                    ##output is an reserved key
       script-file: ${{ steps.publish.outputs.script-file }} 
       ### this output block is access over all this actions
       ## this script-file can we user own defined and in code outout.script-file should be same as declared script-file={} 
@@ -97,7 +105,14 @@ jobs:
     steps:
       - name: Get code
         uses: actions/checkout@v3
+      - name: Cache Dependencies
+        uses: actions/cache@v4
+        id: caches
+        with:
+          path: node_modules
+          key: deps-node-module-${{ hashFiles('**/packages-lock.json') }}
       - name: Install dependencies
+        if: steps.caches.outputs.cache-hit != 'true'
         run: npm ci
       - name: Test code
         id: run-test
@@ -130,7 +145,9 @@ jobs:
               package.json
       - name: outputing the env value
         run: echo "MONGODB_DB_NAME:${{env.MONGODB_DB_NAME}}" ### In this we are accessing the Env variable which is declared globally so 
-        ### we can access those Env variable in any jobs                   
+        ### we can access those Env variable in any jobs 
+        
+        
   download_artifact:
     needs: [ install,artifacts]
     runs-on: ubuntu-latest
@@ -155,17 +172,28 @@ jobs:
         run: ls
       - name: Output filename
         run: echo "${{ needs.artifacts.outputs.script-file }}" 
+
+
         ### this needs.artifacts indicates where we calling output block we should refer that job block needs
         ## so in output_artifact job needs is artifacts
         ## outputs.script-file is where refr=ering the mail output block , script-file should be same as main block where me called
         ## so by this we can call or use the outputs between jobs
+
+
   deploy:
     needs: [ test,output_artifact]  
     runs-on: ubuntu-latest
     steps:
       - name: Get code
         uses: actions/checkout@v3
+      - name: Cache Dependencies
+        uses: actions/cache@v4
+        id: caches
+        with:
+          path: node_modules
+          key: deps-node-module-${{ hashFiles('**/packages-lock.json') }}
       - name: Install dependencies
+        if: steps.caches.outputs.cache-hit != 'true'
         run: npm ci
       - name: Test code
         run: npm run test
