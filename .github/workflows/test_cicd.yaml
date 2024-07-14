@@ -22,14 +22,13 @@ jobs:
     steps: 
       - name: Get code
         uses: actions/checkout@v3
-      - name: cache dependencies
-        id: cache
-        uses: actions/cache@v4
-        with:
-          path: ~/.npm
-          key: deps-node-module-${{ hashFiles('**/packages-lock.json') }}
+      # - name: cache dependencies
+      #   id: cache
+      #   uses: actions/cache@v4
+      #   with:
+      #     path: ~/.npm
+      #     key: deps-node-module-${{ hashFiles('**/packages-lock.json') }}
       - name: Install dependencies
-        if: steps.cache.outputs.cache-hit != 'true'
         run: npm ci
       - name: Lint
         run: npm run lint
