@@ -164,7 +164,7 @@ jobs:
           # continue-on-error: true
           run: npm run test
         - name: upload test report
-          ### this continue on error i used to even if the some speis failed it wont stop the WF for further execution
+          ### this continue on error i used to even if the some spet is failed it wont stop the WF for further execution
           uses: actions/upload-artifact@v3
           with:
             name: test-report
