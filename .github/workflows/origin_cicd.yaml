@@ -174,10 +174,11 @@ jobs:
 
   deploy:
     needs: [ build ]  
-    runs-on: ubuntu-latest
-    steps:
-      - name: Deploy code
-        run: echo "Deploying..." 
+    uses: ./.github/workflows/reusable.yaml
+    # runs-on: ubuntu-latest
+    # steps:
+    #   - name: Deploy code
+    #     run: echo "Deploying..." 
 
 
 

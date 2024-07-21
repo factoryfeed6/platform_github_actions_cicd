@@ -1,0 +1,14 @@
+name: Reusable WF
+on: workflow_call
+jobs:
+    deploy:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Deploying successfully
+              run: echo "Deployed successfully"
+
+
+
+
+#### this is reusable workflow so we can use this workflow in other WF 
+#### workflow_call is a function is allow us to use this workflow 
