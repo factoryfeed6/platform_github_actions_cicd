@@ -12,7 +12,9 @@ on:
       - 'test_cicd.yaml'
       - 'README.md' 
       - 'CD.yaml'                 
-      - 'CI.yaml'      
+      - 'CI.yaml' 
+      - 'matrix.yaml'
+      - 'reusable.yaml'     
 
 env:
   MONGODB_DB_NAME: testing_name
@@ -175,6 +177,8 @@ jobs:
   deploy:
     needs: [ build ]  
     uses: ./.github/workflows/reusable.yaml
+    with:
+      artifact-name: dist-files
     # runs-on: ubuntu-latest
     # steps:
     #   - name: Deploy code
