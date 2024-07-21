@@ -11,8 +11,8 @@ jobs:
                    - node-version: 18
                    - operating-system: ubuntu-latest
                 exclude:
-                    - node-version: 12
-                    - operating-system: windows-latest
+                   - node-version: 12
+                   - operating-system: windows-latest
         runs-on: ${{ matrix.operating-system }}
         steps:
             - name: get code
@@ -20,7 +20,7 @@ jobs:
             - name: install node
               uses: actions/setup-node@v4
               with: 
-                node-version: ${{ matrix.node-verson }}
+                node-version: ${{ matrix.node-version }}
             - name: Install dependies
               run: npm ci
             - name: build 
