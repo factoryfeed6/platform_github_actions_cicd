@@ -1,55 +1,14 @@
 name: Reusable WF
-on:
-    workflow_call:
-        inputs:
-          artifact-name:
-            description: The name of the deployment artifact
-            required: false
-            default: dist
-            type: string
-        # secrets:
-        #   test-secrets: 
-        #     required: true
-        outputs:
-          results:
-            description: the result of deployment operation
-            value: ${{ jobs.deploy.outputs.outcome }}
-
+on: workflow_call
 jobs:
     deploy:
-        outputs:
-          outcome: ${{ steps.set-result.outputs.step-result }}
         runs-on: ubuntu-latest
         steps:
-            - name: get code
-              uses: actions/checkout@v4
-            - name: download artifact
-              uses: actions/download-artifact@v4
-              with: 
-                name: ${{ inputs.artifact-name }}
-            - name: list file
-              run: ls
-            - name: output information
-              run : echo "Deploying & uploading ..................!!!!!!!!"
             - name: Deploying successfully
               run: echo "Deployed successfully"
-            - name: set result output
-              id: set-result
-              run: echo "::set-output name=step-result::success"
 
 
 
 
 #### this is reusable workflow so we can use this workflow in other WF 
 #### workflow_call is a function is allow us to use this workflow 
-
-
-### this input is a reserver key word
-### artifact-name is user defined
-## remaining words are the reserved works where it will used to give inputs where it is called
-
-
-### This output is a reserved key word 
-### results is a user defined 
-## remainig descriptin & value is resverd key word
-## The Input and output are called in where this reusable is wf is called In this example we are using in origin_cicd.yaml 
