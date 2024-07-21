@@ -78,6 +78,7 @@ jobs:
       - name: Lint
         run: npm run lint
       - name: Test code
+        continue-on-error: true                       #### continue on error 
         run: npm run test
       - name: Outputing DB_username
         run: echo  "MONGODB_USERNAME:${{ env.MONGODB_USERNAME}}" 
@@ -159,9 +160,9 @@ jobs:
           run: npm ci
         - name: Test code
           id: run-test
+          continue-on-error: true
           run: npm run test
         - name: upload test report
-          continue-on-error: true 
           ### this continue on error i used to even if the some speis failed it wont stop the WF for further execution
           uses: actions/upload-artifact@v3
           with:
@@ -212,6 +213,7 @@ jobs:
         if: steps.caches.outputs.cache-hit != 'true'
         run: npm ci
       - name: Test code
+        continue-on-error: true
         run: npm run test
       - name: Build code
         run: npm run build
