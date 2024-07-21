@@ -59,11 +59,11 @@ jobs:
         if: steps.caches.outputs.cache-hit != 'true'
         run: npm ci
       - name: Test code
-        continue-on-error: true
+        # continue-on-error: true
         id: run-test
         run: npm run test
       - name: upload test report
-        # if: failure() && steps.run-test.outcome == 'failure'  
+        if: failure() && steps.run-test.outcome == 'failure'  
         uses: actions/upload-artifact@v3
         with:
           name: test-report
@@ -140,7 +140,7 @@ jobs:
         if: steps.caches.outputs.cache-hit != 'true'
         run: npm ci
       - name: Test code
-        continue-on-error: true
+        # continue-on-error: true
         run: npm run test
       - name: Build code
         run: npm run build
