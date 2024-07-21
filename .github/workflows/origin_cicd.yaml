@@ -1,4 +1,4 @@
-name: Testing CICD      
+name: Origin CICD      
 on:
   pull_request:              
     types:                    
