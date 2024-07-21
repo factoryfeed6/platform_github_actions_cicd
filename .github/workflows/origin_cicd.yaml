@@ -191,7 +191,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Prints Deploy output
-        run: ${{ needs.deploy.outputs.results }}
+        run: echo "${{ needs.deploy.outputs.results }}"
 
 
   report:
