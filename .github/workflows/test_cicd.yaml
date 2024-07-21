@@ -78,7 +78,7 @@ jobs:
       - name: Lint
         run: npm run lint
       - name: Test code
-        continue-on-error: true                       #### continue on error 
+        # continue-on-error: true                       #### continue on error 
         run: npm run test
       - name: Outputing DB_username
         run: echo  "MONGODB_USERNAME:${{ env.MONGODB_USERNAME}}" 
@@ -108,11 +108,11 @@ jobs:
         if: steps.caches.outputs.cache-hit != 'true'
         run: npm ci
       - name: Test code
-        continue-on-error: true
+        # continue-on-error: true
         id: run-test
         run: npm run test
       - name: upload test report
-        # if: failure() && steps.run-test.outcome == 'failure'  
+        if: failure() && steps.run-test.outcome == 'failure'  
         ##this if condition is used to create that previous step condition fail or success for example I used success condition
         ##if previous job get success then this step should run and same for failure also 
         ## this If condiion is used in jobs ,steps level
@@ -161,7 +161,7 @@ jobs:
           run: npm ci
         - name: Test code
           id: run-test
-          continue-on-error: true
+          # continue-on-error: true
           run: npm run test
         - name: upload test report
           ### this continue on error i used to even if the some speis failed it wont stop the WF for further execution
