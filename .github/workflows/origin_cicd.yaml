@@ -179,11 +179,19 @@ jobs:
     uses: ./.github/workflows/reusable.yaml
     with:
       artifact-name: dist-files
+    # secrets:
+    #   test-secrets: ${{ secrets.test-secrets }}
     # runs-on: ubuntu-latest
     # steps:
     #   - name: Deploy code
     #     run: echo "Deploying..." 
 
+  print-deploy-result:
+    needs: deploy
+    runs-on: ubuntu-latest
+    steps:
+      - name: Prints Deploy output
+        run: ${{ needs.deploy.outputs.results }}
 
 
   report:
