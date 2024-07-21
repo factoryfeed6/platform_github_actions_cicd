@@ -13,11 +13,15 @@ on:
       - 'README.md' 
       - 'CD.yaml'                 
       - 'CI.yaml'      
+
 env:
-  MONGODB_DB_NAME: testing_name      
+  MONGODB_DB_NAME: testing_name
 jobs:
   install:
-    runs-on: ubuntu-latest
+    strategy:
+      matrix:   
+        operating-system: [ ubuntu-latest, windows-latest ]
+    runs-on: ${{ matrix.operating-system }}
     steps:
     - name: Get code
       uses: actions/checkout@v3
