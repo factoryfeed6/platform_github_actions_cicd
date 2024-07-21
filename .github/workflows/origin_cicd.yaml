@@ -12,9 +12,7 @@ on:
       - 'test_cicd.yaml'
       - 'README.md' 
       - 'CD.yaml'                 
-      - 'CI.yaml' 
-      - 'matrix.yaml'
-      - 'reusable.yaml'     
+      - 'CI.yaml'      
 
 env:
   MONGODB_DB_NAME: testing_name
@@ -177,25 +175,15 @@ jobs:
   deploy:
     needs: [ build ]  
     uses: ./.github/workflows/reusable.yaml
-    with:
-      artifact-name: dist-files
-    # secrets:
-    #   test-secrets: ${{ secrets.test-secrets }}
     # runs-on: ubuntu-latest
     # steps:
     #   - name: Deploy code
     #     run: echo "Deploying..." 
 
-  print-deploy-result:
-    needs: deploy
-    runs-on: ubuntu-latest
-    steps:
-      - name: Prints Deploy output
-        run: echo "${{ needs.deploy.outputs.results }}"
 
 
   report:
-    needs: [ install, build, build, download_artifact,deploy, print-deploy-result ]
+    needs: [ install, build, build, download_artifact,deploy ]
     if: failure() 
     runs-on: ubuntu-latest
     steps:

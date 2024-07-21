@@ -1,19 +1,5 @@
 name: Matrix demo
-on: 
-    pull_request:
-        branches:
-            - main
-        types:                    
-            - opened
-        paths-ignore:
-          - 'test_cicd.yaml'
-          - 'README.md' 
-          - 'CD.yaml'                 
-          - 'CI.yaml'
-          - 'matrix.yaml'
-          - 'reusable.yaml'
-          - 'issues.yml'
-    workflow_dispatch:
+on: push
 jobs:
     build:
         continue-on-error: true

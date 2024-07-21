@@ -219,7 +219,7 @@ jobs:
       - name: Build code
         run: npm run build
       - name: Deploy code
-        run: echo "deploy"
+        uses: ./.github/workflows/reusable.yaml
 
 
 
