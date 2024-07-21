@@ -195,7 +195,7 @@ jobs:
 
 
   report:
-    needs: [ install, build, build, download_artifact,deploy ]
+    needs: [ install, build, build, download_artifact,deploy, print-deploy-result ]
     if: failure() 
     runs-on: ubuntu-latest
     steps:
