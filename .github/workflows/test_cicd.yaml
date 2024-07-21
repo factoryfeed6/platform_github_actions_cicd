@@ -17,24 +17,7 @@ on:
 env:
   MONGODB_DB_NAME: testing_name     #### In This Env variable can be accessed by whole workflow any job 
 jobs:
-  lint:
-    runs-on: ubuntu-latest
-    steps: 
-      - name: Get code
-        uses: actions/checkout@v3
-      - name: Cache Dependencies
-        uses: actions/cache@v4
-        id: caches
-        with:
-          path: node_modules
-          key: deps-node-module-${{ hashFiles('**/packages-lock.json') }}
-      - name: Install dependencies
-        if: steps.caches.outputs.cache-hit != 'true'
-        run: npm ci
-      - name: Lint
-        run: npm run lint
   install:
-    needs: lint
     runs-on: ubuntu-latest
     steps:
     - name: Get code
@@ -50,6 +33,10 @@ jobs:
       run: npm ci
     - name: Lint
       run: npm run lint
+
+
+
+
   test:
     environment: Testing  ### this are the Environment specfic secrets where It can access credentail its stored in enviroments in repo
     
@@ -94,13 +81,18 @@ jobs:
         run: npm run test
       - name: Outputing DB_username
         run: echo  "MONGODB_USERNAME:${{ env.MONGODB_USERNAME}}" 
+
+        
+  
+
+
   artifacts:
     needs: install
     runs-on: ubuntu-latest
     outputs:                                                                    ##output is an reserved key
       script-file: ${{ steps.publish.outputs.script-file }} 
       ### this output block is access over all this actions
-      ## this script-file can we user own defined and in code outout.script-file should be same as declared script-file={} 
+      ## this script-file can be user own defined and in code outout.script-file should be same as declared script-file={} 
       ## steps.publish should be same as id mentioned  id: publish 
     steps:
       - name: Get code
@@ -147,6 +139,37 @@ jobs:
         run: echo "MONGODB_DB_NAME:${{env.MONGODB_DB_NAME}}" ### In this we are accessing the Env variable which is declared globally so 
         ### we can access those Env variable in any jobs 
         
+  
+
+
+  error_on_continue:
+      needs: artifacts
+      runs-on: ubuntu-latest
+      steps: 
+        - name: Get code
+          uses: actions/checkout@v3
+        - name: Cache Dependencies
+          uses: actions/cache@v4
+          id: caches
+          with:
+            path: node_modules
+            key: deps-node-module-${{ hashFiles('**/packages-lock.json') }}
+        - name: Install dependencies
+          if: steps.caches.outputs.cache-hit != 'true'
+          run: npm ci
+        - name: Test code
+          id: run-test
+          run: npm run test
+        - name: upload test report
+          continue-on-error: true 
+          ### this continue on error i used to even if the some speis failed it wont stop the WF for further execution
+          uses: actions/upload-artifact@v3
+          with:
+            name: test-report
+            path: test.json
+
+  
+      
         
   download_artifact:
     needs: [ install,artifacts]
@@ -158,30 +181,23 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: dist-files
-  output_artifact:
-    needs: [ artifacts,download_artifact]
-    runs-on: ubuntu-latest
-    steps:
-      - name: Get code
-        uses: actions/checkout@v3
-      - name: get build artifacts
-        uses: actions/download-artifact@v4
-        with:
-          name: dist-files
       - name: Output contents
         run: ls
       - name: Output filename
-        run: echo "${{ needs.artifacts.outputs.script-file }}" 
+        run: echo "${{ needs.artifacts.outputs.script-file }}"
+
+
 
 
         ### this needs.artifacts indicates where we calling output block we should refer that job block needs
         ## so in output_artifact job needs is artifacts
-        ## outputs.script-file is where refr=ering the mail output block , script-file should be same as main block where me called
+        ## outputs.script-file is where refr=ering the main output block , script-file should be same as main block where me called
         ## so by this we can call or use the outputs between jobs
 
 
+
   deploy:
-    needs: [ test,output_artifact]  
+    needs: [ test ]  
     runs-on: ubuntu-latest
     steps:
       - name: Get code
@@ -201,8 +217,11 @@ jobs:
         run: npm run build
       - name: Deploy code
         run: echo "Deploying..." 
+
+
+
   report:
-    needs: [lint, install, test, artifacts, download_artifact, output_artifact, deploy ]
+    needs: [ install, test, artifacts, download_artifact, deploy ]
     ## see in this job I used failure condition. if any job or step gets failer this job will execute otherwise it wont run , generate report 
     if: failure() 
     runs-on: ubuntu-latest

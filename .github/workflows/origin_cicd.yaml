@@ -1,0 +1,185 @@
+name: Origin CICD      
+on:
+  pull_request:              
+    types:                    
+        - opened
+    branches:            
+        - main    
+  workflow_dispatch:       
+  push:                      
+    branches: [ "main" ]
+    paths-ignore:
+      - 'test_cicd.yaml'
+      - 'README.md' 
+      - 'CD.yaml'                 
+      - 'CI.yaml'      
+env:
+  MONGODB_DB_NAME: testing_name      
+jobs:
+  install:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Get code
+      uses: actions/checkout@v3
+    - name: Cache Dependencies
+      uses: actions/cache@v4
+      id: caches
+      with:
+        path: node_modules
+        key: deps-node-module-${{ hashFiles('**/packages-lock.json') }}
+    - name: Install dependencies
+      if: steps.caches.outputs.cache-hit != 'true'
+      run: npm ci
+    - name: Lint
+      run: npm run lint
+
+
+
+
+  build:
+    environment: Testing 
+    env:
+      MONGODB_CLUSTER_ADDRESS: ${{ secrets.MONGODB_CLUSTER_ADDRESS }}
+      MONGODB_USERNAME: ${{ secrets.MONGODB_USERNAME }}                      
+      MONGODB_PASSWORD: ${{ secrets.MONGODB_PASSWORD }} 
+    needs: install
+    runs-on: ubuntu-latest
+    outputs:                                                                   
+      script-file: ${{ steps.publish.outputs.script-file }}
+    steps: 
+      - name: Get code
+        uses: actions/checkout@v3
+      - name: Cache Dependencies
+        uses: actions/cache@v4
+        id: caches
+        with:
+          path: node_modules
+          key: deps-node-module-${{ hashFiles('**/packages-lock.json') }}
+      - name: Install dependencies
+        if: steps.caches.outputs.cache-hit != 'true'
+        run: npm ci
+      - name: Test code
+        continue-on-error: true
+        id: run-test
+        run: npm run test
+      - name: upload test report
+        # if: failure() && steps.run-test.outcome == 'failure'  
+        uses: actions/upload-artifact@v3
+        with:
+          name: test-report
+          path: test.json
+      - name: Build code
+        run: npm run build
+      - name: Deploy code
+        run: echo "Deploying..." 
+      - name: Publish JS file
+        id: publish                            
+        # run: find dist/assets/*.js -type f -execdir echo 'script-file={}' >> $GITHUB_OUTPUT';' 
+                                ##alternatice syntax 
+        run: find dist/assets/*.js -type f -execdir echo '::set-output name=script::{}' ';'
+
+      - name: Archive production artifacts
+        uses: actions/upload-artifact@v4
+        with:
+            name: dist-files
+            path: |
+              dist
+              package.json
+      - name: outputing the env value
+        run: echo "MONGODB_DB_NAME:${{env.MONGODB_DB_NAME}}"
+      - name: Outputing DB_username
+        run: echo  "MONGODB_USERNAME:${{ env.MONGODB_USERNAME}}" 
+
+        
+  
+    
+  
+
+
+  # error_on_continue:
+  #     needs: build
+  #     runs-on: ubuntu-latest
+  #     steps: 
+  #       - name: Get code
+  #         uses: actions/checkout@v3
+  #       - name: Cache Dependencies
+  #         uses: actions/cache@v4
+  #         id: caches
+  #         with:
+  #           path: node_modules
+  #           key: deps-node-module-${{ hashFiles('**/packages-lock.json') }}
+  #       - name: Install dependencies
+          # if: steps.caches.outputs.cache-hit != 'true'
+  #         run: npm ci
+  #       - name: Test code
+  #         id: run-test
+  #         run: npm run test
+  #       - name: upload test report
+  #         continue-on-error: true 
+  #         uses: actions/upload-artifact@v4
+  #         with:
+  #          name: test-report
+  #          path: test.json
+      
+
+
+        
+  download_artifact:
+    needs: [ install,build]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get code
+        uses: actions/checkout@v3
+      - name: Cache Dependencies
+        uses: actions/cache@v4
+        id: caches
+        with:
+          path: node_modules
+          key: deps-node-module-${{ hashFiles('**/packages-lock.json') }}
+      - name: Install dependencies
+        if: steps.caches.outputs.cache-hit != 'true'
+        run: npm ci
+      - name: Test code
+        run: npm run test
+      - name: Build code
+        run: npm run build
+      - name: Deploy code
+        run: echo "Deploying..." 
+      - name: get build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: dist-files
+      - name: Archive production artifacts
+        uses: actions/upload-artifact@v4
+        with:
+            name: dist-files
+            path: |
+              dist
+              package.json
+      - name: Output contents
+        run: ls
+      - name: Output filename
+        run: echo "${{ needs.build.outputs.script-file }}" 
+
+
+
+
+
+  deploy:
+    needs: [ build ]  
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy code
+        run: echo "Deploying..." 
+
+
+
+  report:
+    needs: [ install, build, build, download_artifact,deploy ]
+    if: failure() 
+    runs-on: ubuntu-latest
+    steps:
+      - name: Getting the final report
+        run: |
+         echo " Resport generate successfully"
+         echo "${{ toJson(github) }}"
