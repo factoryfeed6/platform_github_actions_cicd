@@ -16,6 +16,7 @@ on:
       - 'CI.yaml'      
 env:
   MONGODB_DB_NAME: testing_name     #### In This Env variable can be accessed by whole workflow any job 
+  module-out: deps-node-module
 jobs:
   install:
     runs-on: ubuntu-latest
@@ -27,7 +28,7 @@ jobs:
       id: caches
       with:
         path: node_modules
-        key: deps-node-module-${{ hashFiles('**/packages-lock.json') }}
+        key: ${{ env.module-out }}-${{ hashFiles('**/packages-lock.json') }}
     - name: Install dependencies
       if: steps.caches.outputs.cache-hit != 'true'
       run: npm ci
@@ -65,7 +66,7 @@ jobs:
         id: caches
         with:
           path: node_modules
-          key: deps-node-module-${{ hashFiles('**/packages-lock.json') }}
+          key: ${{ env.module-out }}-${{ hashFiles('**/packages-lock.json') }}
       ### this is used to cache the dependencies which will reduce the workflow runtime
       ## Once the cache dependencies is writen in any block it will act as center dependency which it will used by other jobs no need to again 
       ## if new package is added it will resynck this depenencid 
@@ -103,7 +104,7 @@ jobs:
         id: caches
         with:
           path: node_modules
-          key: deps-node-module-${{ hashFiles('**/packages-lock.json') }}
+          key: ${{ env.module-out }}-${{ hashFiles('**/packages-lock.json') }}
       - name: Install dependencies
         if: steps.caches.outputs.cache-hit != 'true'
         run: npm ci
@@ -155,7 +156,7 @@ jobs:
           id: caches
           with:
             path: node_modules
-            key: deps-node-module-${{ hashFiles('**/packages-lock.json') }}
+            key: ${{ env.module-out }}-${{ hashFiles('**/packages-lock.json') }}
         - name: Install dependencies
           if: steps.caches.outputs.cache-hit != 'true'
           run: npm ci
@@ -209,7 +210,7 @@ jobs:
         id: caches
         with:
           path: node_modules
-          key: deps-node-module-${{ hashFiles('**/packages-lock.json') }}
+          key: ${{ env.module-out }}-${{ hashFiles('**/packages-lock.json') }}
       - name: Install dependencies
         if: steps.caches.outputs.cache-hit != 'true'
         run: npm ci

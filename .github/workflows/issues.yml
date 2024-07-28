@@ -6,3 +6,16 @@ jobs:
     steps:
       - name: Output event details
         run: echo "${{ toJSON(github.event) }}"
+
+
+
+####### factory feed CICD pending 
+
+# git checkout main
+# git pull
+
+# npm install 
+# export PORT=8080
+# export COPILOT_ENVIRONMENT_NAME='prod' 
+# db-migrate up --config common/database.json --env prod
+# node app

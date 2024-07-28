@@ -50,6 +50,7 @@ jobs:
 
 
 ### This output is a reserved key word 
-### results is a user defined 
+### results and outcome is a user defined 
 ## remainig descriptin & value is resverd key word
 ## The Input and output are called in where this reusable is wf is called In this example we are using in origin_cicd.yaml 
+### run: echo "${{ needs.deploy.outputs.results }}" in origin_cicd.yaml
